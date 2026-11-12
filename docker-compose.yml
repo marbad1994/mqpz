@@ -1,0 +1,17 @@
+services:
+  hunt:
+    build: .
+    container_name: birthday-hunt
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      TZ: Europe/Bucharest
+      DATA_DIR: /data
+    volumes:
+      - hunt-data:/data
+      - ./hunt.yaml:/app/hunt.yaml:ro
+    ports:
+      - "127.0.0.1:5137:8149"
+
+volumes:
+  hunt-data:

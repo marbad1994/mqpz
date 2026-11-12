@@ -1,0 +1,41 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency: deploy
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -r requirements.txt pytest
+      - run: python -m pytest -q tests
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+      HOST: ${{ secrets.SERVER_HOST }}
+      DEPLOY_USER: ${{ secrets.SERVER_USER }}
+      PORT: ${{ secrets.SERVER_PORT || '22' }}
+      HOST_KEY: ${{ secrets.SERVER_HOST_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync files and restart
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$HOST_KEY" > ~/.ssh/known_hosts
+          SSH="ssh -i $HOME/.ssh/deploy_key -p $PORT -o StrictHostKeyChecking=yes"
+          rsync -az --delete -e "$SSH" \
+            --exclude .git --exclude .github --exclude .env --exclude data --exclude tests \
+            ./ "$DEPLOY_USER@$HOST:birthday-hunt/"
+          $SSH "$DEPLOY_USER@$HOST" 'cd birthday-hunt && test -f .env && docker compose up -d --build && docker compose ps'

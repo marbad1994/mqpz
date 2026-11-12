@@ -1,0 +1,280 @@
+# Adda's birthday treasure hunt - everything the game master says lives here.
+# Review and edit freely, then restart the container (docker compose restart).
+#
+# Per stage:
+#   riddle   text of the email
+#   answers  accepted answers (matched as whole words, accents and case ignored;
+#            answers of 3 letters or fewer only count in a short reply)
+#   reveal   gift text sent when she solves it
+#   clues    the reviewable clue bank (3 per stage); after these are used up
+#            DeepSeek writes further clues, each easier than the last
+#   gate     earliest time of day (LIVE mode only) the riddle may be sent
+#   deadline (LIVE only) if unanswered by then, reveal and move on
+timezone: Europe/Bucharest
+live_date: 2026-11-14
+opening_time: "08:30"
+
+blackout: { start: "13:45", end: "16:45" }   # cinema, nothing is sent
+bundle_at: "19:30"                           # if behind, reveal all remaining gifts
+dinner_deadline: "20:45"                     # restaurant revealed no later than this
+nudge:
+  offer_after_min: 30     # offer a clue
+  clue_after_min: 60      # unasked clue
+  repeat_every_min: 40    # then unasked clue every N minutes
+
+finale_forced: >-
+  The Game Master is wrapping things up early. Tonight's dinner is at El Torito
+  Legacy, on Decebal. No reservation needed, just go and enjoy it. Happy birthday, Adda.
+
+stages:
+  - id: opening
+    kind: opening
+    header: ""
+    footer: ""
+    riddle: |
+      Happy birthday, Adda!
+
+      Today is yours, and it comes with a game. I am the Game Master, and until
+      tonight you are officially in a treasure hunt. Every riddle you solve
+      unlocks a gift and the next riddle. Stuck? Ask for a CLUE any time, or just
+      guess: I get more helpful every time.
+
+      Your first riddle arrives when you start breakfast (there is cake). When
+      you are sitting down, reply to this email with:
+
+      let the games begin
+    answers: []
+    reveal: ""
+    clues:
+      - "Breakfast first. When you sit down, reply to this email: let the games begin."
+      - "All you need to send is four words: let the games begin."
+      - "Reply to this email with exactly this: let the games begin. That is the whole puzzle."
+
+  - id: flowers
+    header: "Riddle 1"
+    riddle: |
+      I have no legs, yet I stand in water. I am cut down and handed over, and
+      somehow that is a compliment. Bees adore me, noses adore me, and I wilt
+      faster than a Monday morning mood.
+
+      What am I?
+    answers: [flowers, flower, bouquet, roses, rose, tulips, tulip, bunch of flowers]
+    reveal: "Gift unlocked: flowers. A bouquet picked out for you."
+    clues:
+      - "Think of what someone brings when they want to say something without words. It smells nice."
+      - "I come in bunches, I live in a vase, and bees would fight you for me."
+      - "Roses, tulips, peonies: the pretty things that grow in gardens and get wrapped in paper."
+
+  - id: pfa
+    header: "Riddle 2"
+    gate: "11:00"
+    riddle: |
+      I am three letters that turn a dreamer into a business. One person, one
+      signature, no boss but you. Soon the tax office will be your pen pal.
+
+      What am I?
+    answers: [pfa, persoana fizica autorizata, sole trader, freelancer, freelance]
+    reveal: "Gift unlocked: your PFA, solo registration with 3 months covered. You are officially in business."
+    clues:
+      - "Three letters. The kind of business form that suits one person working alone in Romania."
+      - "It stands for Persoana Fizica Autorizata."
+      - "It starts with P, ends with A, and the F in the middle stands for Fizica."
+
+  - id: lunch
+    kind: lunch
+    header: "Lunch check-in"
+    gate: "12:00"
+    deadline: "12:20"
+    deadline_note: "No answer needed any more, lunch is simply served."
+    riddle: |
+      Not a riddle this time. Tell me what is on your plate right now, or what
+      you just ate. It helps me pace the rest of the day.
+    answers: []
+    reveal: "Gift unlocked: lunch, a barbecue at home, cooked for you."
+    clues:
+      - "Just tell me anything about lunch. One word is enough."
+      - "What is on the plate? Meat, salad, bread, anything."
+      - "Reply with the name of what you are eating and I will move on."
+
+  - id: cinema
+    header: "Riddle 3"
+    deadline: "13:20"
+    deadline_note: "Time to get ready: we leave the house at 14:00."
+    fast_clue_from: "13:00"
+    fast_clue_every_min: 10
+    riddle: |
+      Today the best seats in the house are the dark ones. Strangers face the
+      same way, something glowing does all the talking, and popcorn travels
+      along the row.
+
+      The title is what bosses force on offices on away days in the forest:
+      ropes, trust falls, falling backwards into a colleague's arms. And there
+      is a number after it, because one was not enough.
+
+      Name the film. And be dressed and ready to leave the house at 14:00.
+    answers: [team building, team building 2, teambuilding, teambuilding 2]
+    reveal: "Gift unlocked: the cinema. Team Building 2, today at 14:30. We leave the house at 14:00, so get ready."
+    clues:
+      - "Look for the place with a big screen in the dark. Something to see, popcorn optional."
+      - "The film's title is about a corporate away day where colleagues bond with games and trust falls."
+      - "Two words and then a number, because it is the second film: Team Building 2."
+
+  - id: web
+    header: "Riddle 4"
+    gate: "13:00"
+    riddle: |
+      Everyone can find me and nobody can touch me. I have an address made of
+      dots, a front page with no door, and a shop window with no street.
+
+      What am I?
+    answers: [website, web site, wix, web page, webpage, homepage, home page, site, domain]
+    reveal: "Gift unlocked: your website. Wix Light for 12 months, plus Google Workspace Business Starter for 12 months."
+    clues:
+      - "You can visit me without leaving the sofa, and my address usually starts with www."
+      - "A business builds me with a drag and drop editor. The tool's name starts with W."
+      - "A website."
+
+  - id: strapon
+    header: "Riddle 5"
+    gate: "16:45"
+    riddle: |
+      Let's get off this rocky road and drive out on the three way. Finally we
+      will enjoy to be completely fucked.
+
+      What is it?
+    answers: [strap on, strapon, strap-on, strap ons]
+    reveal: "Gift unlocked: a strap-on. Category: sexytime."
+    clues:
+      - "It is a toy, not a person, and it is how two people make a three way."
+      - "It is worn, held in place by straps around the hips."
+      - "Strap-on. One word or two, I accept both."
+
+  - id: swing
+    header: "Riddle 6"
+    gate: "17:15"
+    riddle: |
+      This really opens doors. I just really hope it's not ours.
+
+      What is it?
+    answers: [swing, sex swing, door swing, gunga, sex gunga, sexgunga]
+    reveal: "Gift unlocked: the sex swing (sex gunga), hung from a door. Category: sexytime."
+    clues:
+      - "It hangs from the top of a door frame, and it is meant for adults."
+      - "Children enjoy a tame version in playgrounds. Yours hangs from a door."
+      - "A swing. In Swedish, a gunga."
+
+  - id: console
+    header: "Riddle 7"
+    gate: "17:45"
+    riddle: |
+      I am a box that never held a present, until now. My glow is green, my
+      name is a number, and the only thing the couch will ever hear about me is
+      "five more minutes".
+
+      Inside me live three crooks, a very bad city called Los Santos, and the
+      fifth chapter of a crime story. I have been loved before, so I am not new.
+
+      What am I?
+    answers: [xbox, xbox one, console, gta, gta 5, gta v, games console, game console]
+    reveal: "Gift unlocked: an Xbox One console with GTA 5. Second hand, just to pass the time."
+    clues:
+      - "Living room, a controller, a very green logo."
+      - "It is made by Microsoft, and its name is a letter and a word, then One."
+      - "An Xbox One, with GTA 5 inside."
+
+  - id: derma
+    header: "Riddle 8"
+    gate: "18:15"
+    riddle: |
+      I am a pen that writes nothing and a needle that sews nothing. A thousand
+      tiny pricks, and afterwards you glow. I am an appointment that waits for
+      you, and you pick the day.
+
+      What am I?
+    answers: [dermapen, derma pen, microneedling, micro needling, derma]
+    reveal: "Gift unlocked: a Dermapen appointment. Open ended, book it whenever you like."
+    clues:
+      - "A skincare treatment. It is not something you can unwrap."
+      - "A pen shaped device with tiny needles, used on the face. The treatment is called microneedling."
+      - "Dermapen."
+
+  - id: handbag
+    header: "Riddle 9"
+    gate: "18:30"
+    riddle: |
+      I know you like to use hands and I know you love the bag, but let's not
+      fight and let's not do drugs. Let's unite the two and get a carry.
+
+      What is it?
+    answers: [handbag, hand bag, purse, bag]
+    reveal: "Gift unlocked: a handbag."
+    clues:
+      - "Two words from the riddle, glued together into one object you carry."
+      - "It hangs from your arm or shoulder and holds your phone and keys."
+      - "A handbag."
+
+  - id: ai
+    header: "Riddle 10"
+    gate: "18:45"
+    riddle: |
+      I have read more than you could in ten lifetimes, I never sleep, and I am
+      told I will take over the world. I say "certainly" far too often. Two of
+      me are on their way to help you with the boring parts of your work.
+
+      Who am I?
+    answers: [ai, artificial intelligence, claude, chatgpt, chat gpt, gpt]
+    reveal: "Gift unlocked: Claude Pro for 3 months and ChatGPT Plus for 3 months."
+    clues:
+      - "I answer questions in text and never get tired. One of me is from Anthropic, one from OpenAI."
+      - "My name is two letters, and the first one is the first letter of the alphabet."
+      - "AI: Claude and ChatGPT."
+
+  - id: book
+    header: "Riddle 11"
+    gate: "19:15"
+    riddle: |
+      I have a spine but no bones and a cover but no bed. Everyone judges me by
+      the cover anyway. Inside me is how to sell things and get them delivered.
+
+      What am I?
+    answers: [book, a book, carte, produse vandute si livrate]
+    reveal: "Gift unlocked: the book Produse vandute si livrate."
+    clues:
+      - "You can hold me, I have pages, and you can read me before bed."
+      - "A thing on a shelf with a spine and a cover, about selling and delivering products."
+      - "A book. In Romanian, a carte."
+
+  - id: address
+    kind: address
+    header: "Final stretch"
+    gate: "19:45"
+    riddle: |
+      Go to the home where the bar was both at the bottom of the building and
+      in the center of your day.
+
+      Do not tell me the place. Tell me the address of that home.
+    answers: []          # add the street name here, e.g. [decebal]
+    reveal: "Good. I know exactly where you are standing now."
+    clues:
+      - "Think of the street you used to live on, super close to our monthly New Mexican place."
+      - "The home with a bar in the bottom of the building. Send me the street and the number."
+      - "Just write the street name and number of your old home, nothing else."
+
+  - id: restaurant
+    final: true
+    header: "The last riddle"
+    riddle: |
+      Close to that old front door lives our monthly tradition: New Mexican
+      food, tacos and margaritas, and a name that means "little bull".
+
+      What is the name of the restaurant?
+    answers: [el torito, torito, el torito legacy]
+    reveal: >-
+      You did it. You won the treasure hunt!
+
+      Dinner tonight: El Torito Legacy, on Decebal. No reservation is needed,
+      just arrive hungry. Happy birthday, Adda. Game over, you win.
+    clues:
+      - "New Mexican food, the place we go to once a month."
+      - "Its name means 'little bull' in Spanish."
+      - "El Torito."

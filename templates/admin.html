@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hunt admin</title>
+<style>
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 1.5rem auto; max-width: 62rem; padding: 0 1rem; color: #1b1b1b; line-height: 1.45; }
+  h1, h2 { margin: 1.4rem 0 .5rem; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border: 1px solid #ccc; padding: .4rem .5rem; text-align: left; vertical-align: top; font-size: .9rem; }
+  th { background: #f2f2f2; }
+  .txt { white-space: pre-wrap; font-family: inherit; }
+  .tag { display: inline-block; padding: .1rem .5rem; border-radius: .3rem; background: #e6e6e6; }
+  .live { background: #f6c9c9; } .test { background: #cfe8cf; }
+  form { display: inline-block; margin: .2rem .4rem .2rem 0; }
+  input, select, textarea, button { font-family: inherit; font-size: .9rem; padding: .3rem .5rem; }
+  textarea { width: 100%; box-sizing: border-box; }
+  .cur { background: #fff6cc; }
+</style>
+</head>
+<body>
+<h1>Treasure hunt</h1>
+<p>
+  Mode <span class="tag {{ 'live' if st.mode == 'LIVE' else 'test' }}">{{ st.mode }}</span>
+  Started {{ st.started }} | Finished {{ st.finished }} | Paused {{ st.paused }} |
+  Now {{ now.strftime('%a %H:%M:%S') }} | Player {{ g.player() }}
+</p>
+
+<h2>Controls</h2>
+<form method="post" action="/admin/opening"><button>Send opening now</button></form>
+<form method="post" action="/admin/pause"><button>{{ 'Resume' if st.paused else 'Pause' }}</button></form>
+<form method="post" action="/admin/tick"><button>Run scheduler now</button></form>
+<br>
+<form method="post" action="/admin/mode">
+  <select name="mode"><option>TEST</option><option>LIVE</option></select>
+  <input name="confirm" placeholder="type LIVE to confirm">
+  <button>Switch mode</button>
+</form>
+<form method="post" action="/admin/jump">
+  <select name="stage">{% for s in hunt.stages %}<option value="{{ s.id }}">{{ s.id }}</option>{% endfor %}</select>
+  <button>Jump to stage (re-sends its riddle)</button>
+</form>
+<form method="post" action="/admin/reset">
+  <input name="confirm" placeholder="type RESET to confirm"><button>Reset game</button>
+</form>
+<form method="post" action="/admin/inject" style="display:block">
+  <textarea name="text" rows="2" placeholder="Simulate an inbound reply from the player (no email needed)"></textarea>
+  <button>Inject reply</button>
+</form>
+
+<h2>Stages and clue bank</h2>
+<table>
+<tr><th>#</th><th>Stage</th><th>Gate</th><th>Answers</th><th>Clue bank</th><th>Used</th><th>LLM generated</th></tr>
+{% for s in hunt.stages %}
+<tr class="{{ 'cur' if loop.index0 == st.idx else '' }}">
+  <td>{{ loop.index0 }}</td>
+  <td>{{ s.id }}<div class="txt">{{ s.riddle }}</div></td>
+  <td>{{ s.gate or '' }}{% if s.deadline %}<br>deadline {{ s.deadline }}{% endif %}</td>
+  <td>{{ s.answers | join(', ') }}</td>
+  <td>{% for c in s.clues %}{{ loop.index }}. {{ c }}<br>{% endfor %}</td>
+  <td>{{ st.clue_n.get(s.id, 0) }}</td>
+  <td>{% for c in st.generated.get(s.id, []) %}{{ loop.index }}. {{ c }}<br>{% endfor %}</td>
+</tr>
+{% endfor %}
+</table>
+
+<h2>Outbox waiting</h2>
+<table><tr><th>Send after</th><th>To</th><th>Kind</th><th>Body</th></tr>
+{% for r in pending %}<tr><td>{{ r[0] }}</td><td>{{ r[1] }}</td><td>{{ r[2] }}</td><td class="txt">{{ r[3] }}</td></tr>{% endfor %}
+</table>
+
+<h2>Recently sent</h2>
+<table><tr><th>Sent</th><th>To</th><th>Kind</th><th>Body</th></tr>
+{% for r in sent %}<tr><td>{{ r[0] }}</td><td>{{ r[1] }}</td><td>{{ r[2] }}</td><td class="txt">{{ r[3] }}</td></tr>{% endfor %}
+</table>
+
+<h2>Log</h2>
+<table><tr><th>Time</th><th>Kind</th><th>Text</th></tr>
+{% for r in log %}<tr><td>{{ r[0] }}</td><td>{{ r[1] }}</td><td class="txt">{{ r[2] }}</td></tr>{% endfor %}
+</table>
+</body>
+</html>
