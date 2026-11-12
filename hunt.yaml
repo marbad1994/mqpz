@@ -123,16 +123,17 @@ stages:
     header: "Riddle 4"
     gate: "13:00"
     riddle: |
-      Everyone can find me and nobody can touch me. I have an address made of
-      dots, a front page with no door, and a shop window with no street.
+      You can visit me from any phone without leaving the house. I live on the
+      internet, my address starts with www and ends in .com, and every business
+      needs one as its front door.
 
       What am I?
-    answers: [website, web site, wix, web page, webpage, homepage, home page, site, domain]
+    answers: [website, web site, wix, web page, webpage, homepage, home page, site, domain, web]
     reveal: "Gift unlocked: your website. Wix Light for 12 months, plus Google Workspace Business Starter for 12 months."
     clues:
-      - "You can visit me without leaving the sofa, and my address usually starts with www."
-      - "A business builds me with a drag and drop editor. The tool's name starts with W."
-      - "A website."
+      - "It is a page you open in a browser, like the one for a company such as Makketing."
+      - "Your business's home on the internet: a website."
+      - "A website. You will build yours with Wix."
 
   - id: strapon
     header: "Riddle 5"
